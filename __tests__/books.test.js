@@ -61,4 +61,32 @@ describe("GET /books/:isbn", function () {
     });
 });
   
+/** POST create new book */
+
+describe("POST /books", function () {
+    test("Creates a new book", async function () {
+        const res = await request(app).post(`/books`).send({
+            isbn: "0691161518",
+            amazon_url: "http://a.co/eobPtX2",
+            author: "Matthew Lane",
+            language: "english",
+            pages: 264,
+            publisher: "Princeton University Press",
+            title: "Power-Up: Unlocking the Hidden Mathematics in Video Games",
+            year: 2017
+        });
+        expect(res.statusCode).toBe(201);
+        expect(res.body.book).toHaveProperty("isbn");
+        expect(res.body.book).toHaveProperty("author");
+        expect(res.body.book.isbn).toEqual("0691161518");
+        expect(res.body.book.pages).toEqual(264);
+    });
+
+    test("Prevents creating book without required fields", async function () {
+        const res = await request(app).post(`/books`).send({title: "Power-Up: Unlocking the Hidden Mathematics in Video Games"});
+        expect(res.statusCode).toBe(400);
+    });
+});
+
+
   
