@@ -14,9 +14,9 @@ beforeEach(async () => {
         'https://amazon.com/book', 
         'Karl May', 
         'German', 
-        58,  
+        358,  
         'Klett', 
-        'Das Runde muss ins eckige', 
+        'Der Schatz im Silbersee', 
         2008) 
       RETURNING isbn`);
 
@@ -80,6 +80,9 @@ describe("POST /books", function () {
         expect(res.body.book).toHaveProperty("author");
         expect(res.body.book.isbn).toEqual("0691161518");
         expect(res.body.book.pages).toEqual(264);
+        //test using our API
+        const getBooksRes = await request(app).get(`/books`);
+        expect(getBooksRes.body.books).toHaveLength(2);
     });
 
     test("Prevents creating book without required fields", async function () {
@@ -88,5 +91,33 @@ describe("POST /books", function () {
     });
 });
 
+/** PUT update a book by isbn */
 
+describe("PUT /books/:isbn", function () {
+    let UPDATE_BOOK = {
+        amazon_url: "http://a.co/eobPtX2",
+        author: "Matthew Lane",
+        language: "english",
+        pages: 264,
+        publisher: "Princeton University Press",
+        title: "Power-Up: Unlocking the Hidden Mathematics in Video Games",
+        year: 2017
+    }
+    test("Updates a single book", async function () {
+      const res = await request(app).put(`/books/${bookISBN}`).send(UPDATE_BOOK);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.book.publisher).toBe("Princeton University Press");
+    });
+
+    test("Prevents updating book without required fields", async function () {
+        const res = await request(app).put(`/books/${bookISBN}`).send({title: "Power-Up: Unlocking the Hidden Mathematics in Video Games"});
+        expect(res.statusCode).toBe(400);
+    });
+  
+    test("Responds with 404 if can't find book", async function () {
+      const res = await request(app).put(`/books/00000`).send(UPDATE_BOOK);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+  
   
