@@ -31,3 +31,16 @@ afterAll(async function () {
     await db.end()
 });
 
+/** GET all books */
+
+describe("GET /books", function () {
+    test("Returns list of books", async function () {
+        const res = await request(app).get(`/books`);
+        const { books } = res.body;
+        expect(res.statusCode).toBe(200);
+        expect(books).toHaveLength(1);
+        expect(books[0]).toHaveProperty("isbn");
+        expect(books[0]).toHaveProperty("amazon_url");
+    });
+});
+  
