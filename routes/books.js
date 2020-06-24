@@ -32,6 +32,12 @@ router.get("/:id", async function (req, res, next) {
 
 router.post("/", async function (req, res, next) {
   try {
+    const result = jsonschema.validate(req.body, bookSchema);
+    if (!result.valid) {
+      let listOfErrors = result.errors.map(error => error.stack);
+      let err = new ExpressError(listOfErrors, 400);
+      return next(err);
+    }
     const book = await Book.create(req.body);
     return res.status(201).json({ book });
   } catch (err) {
