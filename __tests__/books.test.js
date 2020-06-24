@@ -94,7 +94,7 @@ describe("POST /books", function () {
 /** PUT update a book by isbn */
 
 describe("PUT /books/:isbn", function () {
-    let UPDATE_BOOK = {
+    const UPDATE_BOOK = {
         amazon_url: "http://a.co/eobPtX2",
         author: "Matthew Lane",
         language: "english",
@@ -104,9 +104,9 @@ describe("PUT /books/:isbn", function () {
         year: 2017
     }
     test("Updates a single book", async function () {
-      const res = await request(app).put(`/books/${bookISBN}`).send(UPDATE_BOOK);
-      expect(res.statusCode).toBe(200);
-      expect(res.body.book.publisher).toBe("Princeton University Press");
+        const res = await request(app).put(`/books/${bookISBN}`).send(UPDATE_BOOK);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.book.publisher).toBe("Princeton University Press");
     });
 
     test("Prevents updating book without required fields", async function () {
@@ -115,9 +115,22 @@ describe("PUT /books/:isbn", function () {
     });
   
     test("Responds with 404 if can't find book", async function () {
-      const res = await request(app).put(`/books/00000`).send(UPDATE_BOOK);
-      expect(res.statusCode).toBe(404);
+        const res = await request(app).put(`/books/00000`).send(UPDATE_BOOK);
+        expect(res.statusCode).toBe(404);
     });
-  });
-  
+});
+
+/** DELETE delete a book by isbn */
+
+describe("DELETE /books/:isbn", function () {
+    test("Deletes a single a book", async function () {
+        const res = await request(app).delete(`/books/${bookISBN}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual({ message: "Book deleted" });
+    });
+    test("Responds with 404 if can't find book", async function () {
+        const res = await request(app).delete(`/books/00000`);
+        expect(res.statusCode).toBe(404);
+    });
+});
   
