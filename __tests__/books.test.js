@@ -43,4 +43,22 @@ describe("GET /books", function () {
         expect(books[0]).toHaveProperty("amazon_url");
     });
 });
+
+/** GET book by isbn */
+
+describe("GET /books/:isbn", function () {
+    test("Gets a single book", async function () {
+        const res = await request(app).get(`/books/${bookISBN}`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.book).toHaveProperty("isbn");
+        expect(res.body.book.isbn).toBe(bookISBN);
+    });
+  
+    test("Responds with 404 if can't find book", async function () {
+        const res = await request(app).get(`/books/00000`);
+        expect(res.statusCode).toBe(404);
+    });
+});
+  
   
